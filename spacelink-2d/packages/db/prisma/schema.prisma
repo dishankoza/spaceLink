@@ -20,12 +20,12 @@ model User {
 model Space {
   id        String  @id @unique @default(cuid())
   name      String
-  width     Int
-  height    Int?
+  width     String
+  height    String
   thumbnail String?
   creatorId String
   creator   User @relation(fields: [creatorId], references: [id])
-  elements SpaceElements[]
+  spaceElements SpaceElements[]
 }
 
 model SpaceElements {
@@ -44,24 +44,26 @@ model Element {
   width    Int
   height   Int
   imageUrl String
+  static Boolean
   spaces SpaceElements[]
   maps MapElements[]
 }
 
 model Map {
   id     String  @id @unique @default(cuid())
-  width  Int
-  height Int
+  width  String
+  height String
   name   String
-  elements MapElements[]
+  thumbnail String
+  mapElements MapElements[]
 }
 
 model MapElements {
   id        String  @id @unique @default(cuid())
   mapId     String
   elementId String
-  x         Int?
-  y         Int?
+  x         Int
+  y         Int
   element Element @relation(fields: [elementId], references: [id])
   map Map @relation(fields: [mapId], references: [id])
 	@@map("mapElements")

@@ -10,6 +10,7 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
     }
 
     try {
+        //TODO make a common function for token parsing
         const decode = jwt.verify(token, JWT_SECRET) as { userId: string, role: "admin" | "user"}
         if(decode.role != 'admin'){
             res.status(403).json({ message: "Unauthorized" })

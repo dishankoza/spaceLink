@@ -45,7 +45,6 @@ router.post("/signin", async (req, res) => {
         return;
     }
     try {
-        console.log('zawe', parseData)
         const user = await client.user.findUnique({
             where:{
                 username: parseData.data.username

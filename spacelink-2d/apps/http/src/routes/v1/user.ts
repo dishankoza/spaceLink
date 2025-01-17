@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { UpdateMetaDataSchema } from "../../types";
 import client from '@repo/db/client';
+import { userMiddleware } from "../../middleware/user";
 
 export const userRouter = Router();
 
-userRouter.post("/metadata", async (req, res) => {
+userRouter.post("/metadata", userMiddleware, async (req, res) => {
     const parseData = UpdateMetaDataSchema.safeParse(req.body)
     if(parseData.error){
         res.status(400).json({ message: "Validation failed" })

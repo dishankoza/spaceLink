@@ -15,6 +15,10 @@ export const UpdateMetaDataSchema = z.object({
     avatarId: z.string(),
 })
 
+export const UpdateElementSchema = z.object({
+    imageUrl: z.string(),
+})
+
 export const CreateSpaceSchema = z.object({
     name: z.string(),
     dimensions: z.string().regex(/^[0-9]{1,5}x[0-9]{1,5}$/),
@@ -33,6 +37,10 @@ export const createElementSchema = z.object({
     width: z.number(),
     height: z.number(),
     static: z.boolean(),
+})
+
+export const deleteElementSchma = z.object({
+    id: z.string(),
 })
 
 export const createAvatarSchema = z.object({
