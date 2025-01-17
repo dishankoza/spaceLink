@@ -29,7 +29,7 @@ userRouter.post("/metadata", userMiddleware, async (req, res) => {
 
 userRouter.get("/metadata/bulk", async (req , res) => {
     const userIdsString = (req.query.ids ?? "[]") as string
-    const userIds = userIdsString.slice(1, userIdsString.length - 2).split(",")
+    const userIds = userIdsString.slice(1, userIdsString.length - 1).trim().split(",")
     if(userIds.length == 0){
         res.status(400).json({ message: "user ids is empty"})
         return
@@ -48,6 +48,7 @@ userRouter.get("/metadata/bulk", async (req , res) => {
                 id: true
             }
         })
+        
 
         res.json({avatars: users.map(user => {
             imageUrl: user.avatar?.imageUrl

@@ -67,14 +67,14 @@ adminRouter.post("/avatar",async (req, res) => {
                 }
             })
         
-            res.json({id: avatar.id})
+            res.json({avatarId: avatar.id})
 
     } catch (error) {
         res.status(400).json({message: "Please try again"})
     }
     })
 
-adminRouter.post("/map", async (req, res) => {
+adminRouter.post("/map", adminMiddleware, async (req, res) => {
     const parseData = createMapSchema.safeParse(req.body);
     if(parseData.error){
         res.status(400).json("Invalid body")
