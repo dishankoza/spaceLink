@@ -14,7 +14,7 @@ router.post('/signup', async (req, res) => {
     const parsedata = SignupSchema.safeParse(req.body);
     if(!parsedata.data) {
         res.status(400).json({ message: "Validation failed" });
-        console.error(parsedata.error)
+        console.error("signup err:", parsedata.error)
         return;
     }
     try {

@@ -13,7 +13,7 @@ spaceRouter.post("/", userMiddleware, async (req , res) => {
     }
     try{
         if(!parseData.data.mapId){
-            await client.space.create({
+            const space = await client.space.create({
                 data: {
                     name: parseData.data.name,
                     width: parseData.data.dimensions.split("x")[1],
@@ -21,7 +21,7 @@ spaceRouter.post("/", userMiddleware, async (req , res) => {
                     creatorId: req.userId!
                 }
             })
-            res.json({message: "Space created"})
+            res.json({spaceId: space.id})
         }else{
             const map = await client.map.findUnique({
                 where: {
@@ -52,56 +52,15 @@ spaceRouter.post("/", userMiddleware, async (req , res) => {
                             y: e.y,
                         }))
                     })
+                    res.json({spaceId: space.id})
                 })
-                res.json({message: "Space created"})
         }
     }catch (error) {
         res.status(400).json({message: "please try again!"})
     }
 })
 
-spaceRouter.get(":spaceId", userMiddleware, async (req , res) => {
-    try {
-        const space = await client.space.findUnique({
-            where: {
-                id: req.params.spaceId,
-            },
-            include: {
-                spaceElements: {
-                    include: {
-                        element: true
-                    }
-                }
-            }
-        })
-
-        if(!space){
-            res.json({message: "Space not found"})
-            return
-        }
-
-        res.json({
-            dimension: `${space.width}x${space.height}`,
-            elements: space.spaceElements.map(e => ({
-                id: e.id,
-                element: {
-                    id: e.element.id,
-                    imageUrL: e.element.imageUrl,
-                    height: e.element.height,
-                    width: e.element.width,
-                    static: e.element.static
-                },
-                x: e.x,
-                y: e.y,
-
-            }))
-        })
-    } catch (error) {
-        res.status(400).json({message: "unable to retrieve the space"})
-    }
-})
-
-spaceRouter.delete(":spaceId", userMiddleware, async (req , res) => {
+spaceRouter.delete("/:spaceId", userMiddleware, async (req , res) => {
     try {
         const space = await client.space.findUnique({
             where: {
@@ -120,11 +79,12 @@ spaceRouter.delete(":spaceId", userMiddleware, async (req , res) => {
             res.status(403).json({message: "Unauthorized to delete the space"})
             return
         }
-        await client.space.delete({
+        const deletedSpace = await client.space.delete({
             where: {
                 id: req.params.spaceId
             }
         })
+        res.json({ message: `space with id ${deletedSpace.id} deleted` })
     } catch (error) {
         res.status(400).json({message: "unable to perform the operation"})
     }
@@ -202,4 +162,45 @@ spaceRouter.delete("/element", userMiddleware, async (req , res) => {
         return;
     }
     res.json({message: "Succesffully deleted the element"})
+})
+
+spaceRouter.get("/:spaceId", userMiddleware, async (req , res) => {
+    try {
+        const space = await client.space.findUnique({
+            where: {
+                id: req.params.spaceId,
+            },
+            include: {
+                spaceElements: {
+                    include: {
+                        element: true
+                    }
+                }
+            }
+        })
+
+        if(!space){
+            res.json({message: "Space not found"})
+            return
+        }
+
+        res.json({
+            dimension: `${space.width}x${space.height}`,
+            elements: space.spaceElements.map(e => ({
+                id: e.id,
+                element: {
+                    id: e.element.id,
+                    imageUrL: e.element.imageUrl,
+                    height: e.element.height,
+                    width: e.element.width,
+                    static: e.element.static
+                },
+                x: e.x,
+                y: e.y,
+
+            }))
+        })
+    } catch (error) {
+        res.status(400).json({message: "unable to retrieve the space"})
+    }
 })

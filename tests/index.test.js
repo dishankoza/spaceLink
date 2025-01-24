@@ -1,4 +1,4 @@
-const { default: axios2, all } = require("axios");
+const { default: axios2 } = require("axios");
 
 const BACKEND_URL = "http://localhost:3000";
 
@@ -174,8 +174,6 @@ describe("User avatar information", () => {
 
         userId = newUserRes.data.userId;
 
-        console.log(userId)
-        
         const res = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
             username,
             password
@@ -206,7 +204,7 @@ describe("User avatar information", () => {
     })
 })
 
-describe("space infromation", () => {
+describe("Space information", () => {
     let adminId, adminToken, element1Id, element2Id, mapId, userId, token ;
     beforeAll(async () => {
         const username = `dishank-${Math.random()}`;
@@ -225,21 +223,20 @@ describe("space infromation", () => {
         adminToken = userRes.data.token;
 
         const username1 = `dishank-${Math.random()}`;
-        const password1 = Math.random();
         const signUpRes1 = axios.post(`${BACKEND_URL}/api/v1/signup`,{
-            username1,
-            password1,
+            username: username1,
+            password,
             type: 'user'
         });
         userId = (await signUpRes1).data.userId;
 
         const userRes1 = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-            username1,
-            password1
+            username: username1,
+            password
         });
         token = userRes1.data.token;
 
-        const element1Res = axios.post(`${BACKEND_URL}/api/v1/admin/element`,
+        const element1Res = await axios.post(`${BACKEND_URL}/api/v1/admin/element`,
             {
                 "imageUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
                 "width": 1,
@@ -252,7 +249,7 @@ describe("space infromation", () => {
                 }
             });
 
-        const element2Res = axios.post(`${BACKEND_URL}/api/v1/admin/element`,
+        const element2Res = await axios.post(`${BACKEND_URL}/api/v1/admin/element`,
             {
                 "imageUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
                 "width": 1,
@@ -265,10 +262,10 @@ describe("space infromation", () => {
                 }
             });
     
-        element1Id = await element1Res.data.id;
-        element2Id = await element2Res.data.id;
+        element1Id = element1Res.data.id
+        element2Id = element2Res.data.id;
         
-        const mapRes = await axios(`${BACKEND_URL}/api/v1/admin/map`,
+        const mapRes = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,
             {
                 "thumbnail": "https://thumbnail.com/a.png",
                 "dimensions": "100x200",
@@ -331,7 +328,7 @@ describe("space infromation", () => {
         },
         {
             headers: {
-                'authroization': `Bearer ${token}`
+                'authorization': `Bearer ${token}`
             }
         }
     )
@@ -350,10 +347,12 @@ describe("space infromation", () => {
             }
         }
     )
+
+        
         const spaceDeleteRes = await axios.delete(`${BACKEND_URL}/api/v1/space/${spaceRes.data.spaceId}`,
             {
                 headers: {
-                    'authroization': `Bearer ${token}`
+                    'authorization': `Bearer ${token}`
                 }
             }
         )
@@ -364,7 +363,7 @@ describe("space infromation", () => {
         const spaceRes = await axios.delete(`${BACKEND_URL}/api/v1/space/${Math.random()}`,
         {
             headers: {
-                'authroization': `Bearer ${token}`
+                'authorization': `Bearer ${token}`
             }
         });
         expect(spaceRes.status).toBe(400);
@@ -381,29 +380,32 @@ describe("space infromation", () => {
             }
         })
 
-        const spacedelete = await axios.delete(`${BACKEND_URL}/api/v1/space${response.data.spaceId}`,
+        console.log(response, adminToken)
+
+        const spacedelete = await axios.delete(`${BACKEND_URL}/api/v1/space/${response.data.spaceId}`,
         {
             headers: {
                 'authorization': `Bearer ${adminToken}`
             }
         })
 
-        expect(spacedelete.status).toBe(400);
+        expect(spacedelete.status).toBe(403);
     })
 
     test("Fetch all my spaces", async () => {
-        const spaceListResp = await axios.get(`${BACKEND_URL}/api/v1/spaces/all`, {
+        const spaceListResp = await axios.get(`${BACKEND_URL}/api/v1/space/all`, {
             headers: {
                 'authorization': `Bearer ${adminToken}`
             }
         })
         
-        expect(spaceListResp.data.length).toBeDefined(0)
+        expect(spaceListResp.data.spaces.length).toBe(0)
     })
 
     test("Admin has no spaces initially", async () => {
         const createSpaceResp = await axios.post(`${BACKEND_URL}/api/v1/space`, {
             name: "yed",
+            dimensions: '100x200',
             mapId
         },{
             headers: {
@@ -418,7 +420,7 @@ describe("space infromation", () => {
         })
 
         expect(spaceList2esp.data.spaces.length).toBe(1);
-        expect(spaceList2esp.data.spaces.filer(x => x.id === createSpaceResp.data.id)).toBeDefined();
+        expect(spaceList2esp.data.spaces.filter(x => x.id === createSpaceResp.data.id)).toBeDefined();
 
     })
 
@@ -521,7 +523,7 @@ describe("space infromation", () => {
 //                 dimensions: "100x200",
 //             }, {
 //                 headers : {
-//                     authroization: `Bearer ${token}`
+//                     authorization: `Bearer ${token}`
 //                 }
 //             })
         
@@ -546,7 +548,7 @@ describe("space infromation", () => {
 //         },
 //         {
 //             headers: {
-//                 authroization: `Bearer ${token}`
+//                 athorization: `Bearer ${token}`
 //             }
 //         })
 
@@ -931,7 +933,7 @@ describe("space infromation", () => {
 //                 dimensions: "100x200",
 //             }, {
 //                 headers : {
-//                     authroization: `Bearer ${token}`
+//                     authorization: `Bearer ${token}`
 //                 }
 //             })
         
