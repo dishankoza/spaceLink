@@ -22,7 +22,7 @@ export const UpdateElementSchema = z.object({
 export const CreateSpaceSchema = z.object({
     name: z.string(),
     dimensions: z.string().regex(/^[0-9]{1,5}x[0-9]{1,5}$/),
-    mapId: z.string(),
+    mapId: z.string().optional(),
 })
 
 export const addEelementSchema = z.object({
@@ -52,7 +52,7 @@ export const createMapSchema = z.object({
     thumbnail: z.string(),
     dimensions: z.string().regex(/^[0-9]{1,5}x[0-9]{1,5}$/),
     name: z.string(),
-    defaultElement: z.array(z.object({
+    defaultElements: z.array(z.object({
         elementId: z.string(),
         x: z.number(),
         y: z.number(),

@@ -12,7 +12,7 @@ adminRouter.post("/element", adminMiddleware, async (req, res) => {
         return;
     }
     try {
-        const elementId = client.element.create({
+        const elementId = await client.element.create({
             data: {
                 imageUrl: parseData.data.imageUrl,
                 width: parseData.data.width,
@@ -24,7 +24,7 @@ adminRouter.post("/element", adminMiddleware, async (req, res) => {
             }
         })
 
-        res.json({id: elementId})
+        res.json({id: elementId.id})
     } catch (error) {
         res.status(400).json("unable to perform the operation")
     }
@@ -88,7 +88,7 @@ adminRouter.post("/map", adminMiddleware, async (req, res) => {
                 height: parseData.data.dimensions.split("x")[1],
                 thumbnail: parseData.data.thumbnail,
                 mapElements: {
-                    create: parseData.data.defaultElement.map(de => ({
+                    create: parseData.data.defaultElements.map(de => ({
                         elementId: de.elementId,
                         x: de.x,
                         y: de.y
