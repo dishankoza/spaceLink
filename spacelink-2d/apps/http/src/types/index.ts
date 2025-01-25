@@ -39,7 +39,7 @@ export const createElementSchema = z.object({
     static: z.boolean(),
 })
 
-export const deleteElementSchma = z.object({
+export const deleteElementSchema = z.object({
     id: z.string(),
 })
 

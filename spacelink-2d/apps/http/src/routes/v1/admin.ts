@@ -31,7 +31,7 @@ adminRouter.post("/element", adminMiddleware, async (req, res) => {
 })
 
 adminRouter.put("/element/:elementId", adminMiddleware, async (req, res) => {
-    const parseData = UpdateElementSchema.safeParse(req);
+    const parseData = UpdateElementSchema.safeParse(req.body);
     if(parseData.error){
         res.status(400).json({message: "invalid body"})
         return
@@ -52,7 +52,7 @@ adminRouter.put("/element/:elementId", adminMiddleware, async (req, res) => {
         
 })
 
-adminRouter.post("/avatar",async (req, res) => {
+adminRouter.post("/avatar", adminMiddleware, async (req, res) => {
     const parseData = createAvatarSchema.safeParse(req.body);
     if(parseData.error){
         res.status(400).json({message: "Invalid request body"})

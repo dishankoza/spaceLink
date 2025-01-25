@@ -6,6 +6,7 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
     const token = req.headers["authorization"]?.split(" ")[1]
     if(!token){
         res.status(403).json({ message: "Unauthorized" })
+        console.log("token missing for route: ", req.path, req.method)
         return;
     }
 
@@ -14,6 +15,7 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
         const decode = jwt.verify(token, JWT_SECRET) as { userId: string, role: "admin" | "user"}
         if(decode.role != 'admin'){
             res.status(403).json({ message: "Unauthorized" })
+            console.log("user is not admin for route: ", req.path, req.method)
             return;
         }
         req.userId = decode.userId;
@@ -21,6 +23,7 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
         next();
     } catch (error) {
         res.status(403).json({ message: "Unauthorized" })
+        console.log("Unauthorized")
         return;
     }
 }
