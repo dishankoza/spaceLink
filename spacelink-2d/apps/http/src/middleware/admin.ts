@@ -23,7 +23,7 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
         next();
     } catch (error) {
         res.status(403).json({ message: "Unauthorized" })
-        console.log("Unauthorized")
+        console.log("Unauthorized", req.path)
         return;
     }
 }
